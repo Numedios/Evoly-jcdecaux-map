@@ -1,0 +1,5 @@
+@import "tailwindcss";
+
+@theme {
+  --color-principal: #3b82f6; /* bleu */
+}

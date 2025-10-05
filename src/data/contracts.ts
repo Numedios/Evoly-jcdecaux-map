@@ -1,0 +1,25 @@
+
+
+export const contracts = [
+  { name: "rouen", commercial_name: "cy'clic", cities: ["Rouen"], country_code: "FR" },
+  { name: "toulouse", commercial_name: "Vélô", cities: ["Toulouse"], country_code: "FR" },
+  { name: "luxembourg", commercial_name: "Veloh", cities: ["Luxembourg"], country_code: "LU" },
+  { name: "dublin", commercial_name: "dublinbikes", cities: ["Dublin"], country_code: "IE" },
+  { name: "stockholm", commercial_name: "Cyclocity", cities: ["Stockholm"], country_code: "SE" },
+  { name: "santander", commercial_name: "Tusbic", cities: ["Santander"], country_code: "ES" },
+  { name: "lund", commercial_name: "Lundahoj", cities: ["Lund"], country_code: "SE" },
+  { name: "bruxelles", commercial_name: "villo", cities: ["Bruxelles"], country_code: "BE" },
+  { name: "lyon", commercial_name: "Vélo'V", cities: ["Lyon", "Villeurbanne"], country_code: "FR" },
+  { name: "amiens", commercial_name: "Velam", cities: ["Amiens"], country_code: "FR" },
+  { name: "mulhouse", commercial_name: "VéloCité", cities: ["Mulhouse"], country_code: "FR" },
+  { name: "ljubljana", commercial_name: "Bicikelj", cities: ["Ljubljana"], country_code: "SI" },
+  { name: "nancy", commercial_name: "vélOstan'lib", cities: ["Nancy"], country_code: "FR" },
+  { name: "namur", commercial_name: "Li bia velo", cities: ["Namur"], country_code: "BE" },
+  { name: "creteil", commercial_name: "Cristolib", cities: ["Créteil"], country_code: "FR" },
+  { name: "cergy-pontoise", commercial_name: "Velo2", cities: ["Cergy", "Pontoise"], country_code: "FR" },
+  { name: "vilnius", commercial_name: "Cyclocity", cities: ["Vilnius"], country_code: "LT" },
+  { name: "toyama", commercial_name: "Cyclocity", cities: ["Toyama"], country_code: "JP" },
+  { name: "marseille", commercial_name: "Le vélo", cities: ["Marseille"], country_code: "FR" },
+  { name: "nantes", commercial_name: "Bicloo", cities: ["Nantes"], country_code: "FR" },
+  { name: "brisbane", commercial_name: "CityCycle", cities: ["Brisbane"], country_code: "AU" },
+];

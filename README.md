@@ -1,37 +1,103 @@
 # 🚲 JCDecaux Map
 
-Mini-projet React (take-home test) pour visualiser les stations de vélos JCDecaux.  
-Stack choisie : **Vite + React + TypeScript + Tailwind v4**.
+Mini-projet React permettant de visualiser les stations de vélos JCDecaux  
+Développé dans le cadre d’un test technique.  
 
 ---
 
-## ⚙️ Installation
+## ⚙️ Installation & Lancement
 
-```bash
-# Cloner le repo
+# 1️⃣ Cloner le dépôt
 git clone https://github.com/<ton-compte>/jcdecaux-map.git
 cd jcdecaux-map
 
-# Installer les dépendances
+# 2️⃣ Installer les dépendances
 pnpm install
 
-```
+# 3️⃣ Créer le fichier d’environnement
+# (à la racine du projet)
+echo "VITE_JCDECAUX_API_KEY=ta_clef_api_jcdecaux" > .env
+echo "VITE_API_BASE_URL=https://api.jcdecaux.com/vls/v3" >> .env
 
-##  ▶️ Lancer en dev
+# 💡 Les variables doivent toujours commencer par VITE_
+# Exemple fourni dans .env.example
 
-```bash
+# 4️⃣ Lancer le projet en mode développement
 pnpm dev
-Application accessible sur http://localhost:5173
 
+# 🖥️ Application disponible sur :
+# 👉 http://localhost:5173
 
+---
 
-```
+## 🧰 Build & Preview (optionnel)
 
-##  VS Code (Tailwind v4)
+# Générer la version de production
+pnpm build
 
-```bash
-Ajoute ce réglage dans .vscode/settings.json pour ignorer l’avertissement :
-{
-  "css.lint.unknownAtRules": "ignore",
-  "css.validate": true
-}
+# Prévisualiser le build localement
+pnpm preview
+
+---
+
+## 🧱 Stack Technique
+
+- ⚡ **Vite** – Build ultra-rapide pour React + TS
+- ⚛️ **React 18** – Composants fonctionnels et hooks modernes
+- 🧠 **TypeScript** – Typage strict pour fiabilité et clarté
+- 🎨 **Tailwind CSS v4** – Style moderne et responsive
+- 🗺️ **React Leaflet** – Intégration de cartes interactives
+- 📦 **PapaParse** – Parsing CSV rapide et fiable
+- ❤️ **Custom Hooks** – Gestion des favoris, filtres, et auto-refresh
+- 🧩 **Architecture modulaire** – Composants réutilisables et typés
+
+---
+
+## 👀 Aperçu Visuel
+
+# 🗺️ Carte interactive : 
+# - Affichage dynamique des stations JCDecaux
+# - Popup au survol avec nom et disponibilité
+# - Filtrage des stations ouvertes / vélos / places
+
+# ⭐ Favoris :
+# - Ajout et suppression en un clic
+# - Persistance locale
+
+# 🕑 Historique :
+# - Historique des dernières stations consultées
+# - Auto-rafraîchissement toutes les 90 secondes
+
+# ⚠️ Gestion des erreurs :
+# - Popup claire si l’API ou le fichier CSV échoue
+# - Vérification du format CSV à l’import
+
+---
+
+## 🧩 Structure du Projet
+
+# 📁 src/
+# ├── components/              # Composants UI réutilisables (Sidebar, Map, Popup, etc.)
+# ├── hooks/                   # Custom hooks : useFavorites, useFilters, useRealtime...
+# ├── pages/                   # Pages principales (StationsPage)
+# ├── services/                # Appels API JCDecaux
+# ├── types/                   # Typages TypeScript structurés
+# │   ├── api/                 # Types liés aux réponses JCDecaux
+# │   ├── data/                # Types de données locales (filtres, favoris...)
+# │   ├── ui/                  # Types liés aux composants UI
+# ├── utils/                   # Fonctions utilitaires (parse CSV, mappers...)
+# ├── data/                    # Données statiques (contrats JCDecaux)
+# ├── main.tsx                 # Point d’entrée React
+# └── App.tsx                  # Router & structure principale
+
+---
+
+## 🧩 Astuce VS Code (pour Tailwind v4)
+
+# Ajoute ceci dans .vscode/settings.json pour éviter les avertissements :
+# {
+#   "css.lint.unknownAtRules": "ignore",
+#   "css.validate": true
+# }
+
+---

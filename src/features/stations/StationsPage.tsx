@@ -1,87 +1,187 @@
 import { useState } from "react";
 import Papa from "papaparse";
+
 import Map from "./Map";
-import type { Station } from "../../types/station";
+import Sidebar from "../../components/SideBar";
+import ImportControls from "../../components/ImportControls";
+import ContractSelect from "../../components/ContractSelect";
+import StationDetailsPanel from "../../components/StationDetailsPanel";
+import StationPanel from "../../components/StationPanel";
+import ErrorPopup from "../../components/ErrorPopup";
+
+import { contracts } from "../../data/contracts";
+import { useFavorites } from "../../hooks/useFavorites";
+import { useFilters } from "../../hooks/useFilters";
+import { useRealtime } from "../../hooks/useRealTime";
+import { useAutoRefresh } from "../../hooks/useAutoRefresh";
+
+import { parseStationsCsv } from "../../utils/parseStationsCsv";
+import { mapRealtimeToHistoryEntry, mapToStationDetailsModel } from "../../utils/mappers";
+
+import type { CsvStation, StationCsvRow } from "../../types/station";
+import type { PanelType } from "../../types/ui";
 
 export default function StationsPage() {
-    const [stations, setStations] = useState<Station[]>([]);
+  // === State principal ===
+  const [stations, setStations] = useState<CsvStation[]>([]);
+  const [selectedStation, setSelectedStation] = useState<{ contract: string; number: number } | null>(null);
+  const [contract, setContract] = useState<string>("");
+  const [activeContract, setActiveContract] = useState<string>("");
+  const [selectedPanel, setSelectedPanel] = useState<PanelType>(null);
+  const [filters, setFilters] = useState({ open: false, bikes: false, stands: false });
 
-    const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (!file) return;
+  // === Hooks ===
+  const { realtimeData, fetchRealtime, history, error, setError } = useRealtime();
+  const { favorites, toggleFavorite, isFavorite } = useFavorites([]);
+  const { applyFilters } = useFilters();
 
-        Papa.parse(file, {
-            header: true,
-            skipEmptyLines: true,
-            complete: (result) => {
-                const parsedStations: Station[] = result.data
-                    .map((row: any) => {
-                        let lat = parseFloat(row.Latitude);
-                        let lng = parseFloat(row.Longitude);
+  // === Auto-refresh ===
+  useAutoRefresh({
+    selectedStation,
+    fetchRealtime,
+    intervalMs: 90000, // 90 secondes
+  });
 
-                        // 🚨 Cas où Latitude contient du texte (CSV mal formé avec virgule dans l'adresse)
-                        if (isNaN(lat) && row.__parsed_extra && row.__parsed_extra.length > 0) {
-                            lat = parseFloat(row.Longitude);          // on décale Longitude en Latitude
-                            lng = parseFloat(row.__parsed_extra[0]);  // et on prend la vraie Longitude
-                        }
+  // === Derived data ===
+  const filteredHistory = applyFilters(history, filters);
+  const filteredFavorites = applyFilters(favorites, filters);
 
-                        if (isNaN(lat) || isNaN(lng)) {
-                            console.warn(`Station ${row.Number} - ${row.Name} ignorée (coordonnées invalides)`);
-                            return null;
-                        }
+  // === Sélection station ===
+  const handleSelectStation = (contract: string, number: number) => {
+    setSelectedStation({ contract, number });
+    setSelectedPanel("station");
+    fetchRealtime(contract, number);
+  };
 
-                        return {
-                            number: parseInt(row.Number),
-                            name: row.Name,
-                            // 📝 On reconstruit l’adresse : Address + si Latitude est du texte → on concatène
-                            address:
-                                row.Address && isNaN(parseFloat(row.Latitude))
-                                    ? `${row.Address}, ${row.Latitude}`
-                                    : row.Address || "Adresse inconnue",
-                            lat,
-                            lng,
-                        };
-                    })
-                    .filter((s): s is Station => s !== null);
+  // === Import CSV ===
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
 
-                setStations(parsedStations);
-            },
-        });
-    };
+    // ✅ Vérifie l’extension et le type MIME
+    const isCsv =
+      file.type === "text/csv" || file.name.toLowerCase().endsWith(".csv");
 
-    return (
-        <div className="flex flex-col h-screen">
-            {/* Header */}
-            <header className="bg-white shadow-md p-4 flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center rounded-b-lg">
-                <h1 className="text-2xl font-extrabold text-blue-600 tracking-tight">
-                    🚲 JCDecaux Map
-                </h1>
+    if (!isCsv) {
+      alert("❌ Le fichier sélectionné doit être un fichier CSV (.csv)");
+      event.target.value = ""; // réinitialise le champ input
+      return;
+    }
 
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
-                    {/* Recherche */}
-                    <input
-                        type="text"
-                        placeholder="🔍 Rechercher une station..."
-                        className="px-4 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 w-full sm:w-64 transition"
-                    />
+    if (!contract) {
+      alert("⚠️ Sélectionnez d’abord une ville avant d’importer un fichier CSV.");
+      event.target.value = "";
+      return;
+    }
 
-                    {/* Upload CSV stylisé */}
-                    <label className="px-4 py-2 bg-blue-500 text-white rounded-md cursor-pointer hover:bg-blue-600 transition text-center text-sm font-medium">
-                        Importer CSV
-                        <input
-                            type="file"
-                            accept=".csv"
-                            onChange={handleFileUpload}
-                            className="hidden"
-                        />
-                    </label>
-                </div>
-            </header>
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: (result) => {
+        const parsedStations = parseStationsCsv(
+          result.data as StationCsvRow[],
+          contract
+        );
+        setStations(parsedStations);
+        setActiveContract(contract);
+      },
+    });
+  };
 
-            {/* Carte */}
-            <main className="flex-1">
-                <Map stations={stations} />
-            </main>
-        </div>
-    );
+
+  return (
+    <div className="flex h-screen relative">
+      {/* 🧭 Barre latérale */}
+      <Sidebar selected={selectedPanel} onSelect={setSelectedPanel} />
+
+      {/* 🗺️ Carte principale */}
+      <main className="flex-1 relative bg-gray-100">
+        <Map stations={stations} onFetchRealtime={handleSelectStation} contract={activeContract} />
+
+        {/* 🔍 Zone d’import CSV */}
+        <ImportControls
+          contract={contract}
+          setContract={setContract}
+          contracts={contracts}
+          handleFileUpload={handleFileUpload}
+        />
+
+        {/* 📍 Détails d’une station */}
+        {selectedPanel === "station" && realtimeData && (
+          <StationDetailsPanel
+            realtimeData={mapToStationDetailsModel(realtimeData)}
+            onClose={() => setSelectedPanel(null)}
+            isFavorite={isFavorite(mapRealtimeToHistoryEntry(realtimeData))}
+            onToggleFavorite={() => toggleFavorite(mapRealtimeToHistoryEntry(realtimeData))}
+            onRefresh={() =>
+              selectedStation && fetchRealtime(selectedStation.contract, selectedStation.number)
+            }
+          />
+        )}
+
+        {/* 🕓 Historique */}
+        {selectedPanel === "history" && (
+          <StationPanel
+            type="history"
+            list={history}
+            filteredList={filteredHistory}
+            favorites={favorites}
+            filters={filters}
+            setFilters={setFilters}
+            onFetchRealtime={handleSelectStation}
+            toggleFavorite={toggleFavorite}
+            onClose={() => setSelectedPanel(null)} // ✅ ajouté ici
+          />
+        )}
+
+        {selectedPanel === "favorite" && (
+          <StationPanel
+            type="favorite"
+            list={favorites}
+            filteredList={filteredFavorites}
+            favorites={favorites}
+            filters={filters}
+            setFilters={setFilters}
+            onFetchRealtime={handleSelectStation}
+            toggleFavorite={toggleFavorite}
+            onClose={() => setSelectedPanel(null)} // ✅ ajouté ici
+          />
+        )}
+
+
+        {/* ⚠️ Popup d’erreur */}
+        {error && (
+          <ErrorPopup selectedStation={selectedStation} onClose={() => setError(false)}>
+            <ContractSelect
+              value={activeContract}
+              onChange={setActiveContract}
+              contracts={contracts}
+              className="w-full px-3 py-2 border rounded mb-4 text-sm"
+              placeholder="-- Choisir une ville --"
+            />
+
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setError(false)}
+                className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 text-sm"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={() => {
+                  setError(false);
+                  if (selectedStation) {
+                    fetchRealtime(activeContract, selectedStation.number);
+                  }
+                }}
+                className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+              >
+                Réessayer
+              </button>
+            </div>
+          </ErrorPopup>
+        )}
+      </main>
+    </div>
+  );
 }

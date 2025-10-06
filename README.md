@@ -63,22 +63,6 @@ pnpm dev
 
 ---
 
-## 🧩 Structure du Projet
-
-📁 src/
-├── app.tsx                  # Router & structure principale
-├── components/              # Composants UI réutilisables (Sidebar, Map, Popup, etc.)
-├── hooks/                   # Custom hooks : useFavorites, useFilters, useRealtime...
-├── pages/                   # Pages principales (StationsPage)
-├── services/                # Appels API JCDecaux
-├── types/                   # Typages TypeScript structurés
-│   ├── api/                 # Types liés aux réponses JCDecaux
-│   ├── data/                # Types de données locales (filtres, favoris...)
-│   ├── ui/                  # Types liés aux composants UI
-├── utils/                   # Fonctions utilitaires (parse CSV, mappers...)
-├── data/                    # Données statiques (contrats JCDecaux)
-└── main.tsx                 # Point d’entrée React
-
 ---
 
 ## 🧩 Astuce VS Code (pour Tailwind v4)

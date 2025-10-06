@@ -7,36 +7,25 @@ Développé dans le cadre d’un test technique.
 
 ## ⚙️ Installation & Lancement
 
-# 1️⃣ Cloner le dépôt
+# Cloner le dépôt
 git clone https://github.com/<ton-compte>/jcdecaux-map.git
 cd jcdecaux-map
 
-# 2️⃣ Installer les dépendances
+# Installer les dépendances
 pnpm install
 
-# 3️⃣ Créer le fichier d’environnement
+#  Créer le fichier d’environnement
 # (à la racine du projet)
 echo "VITE_JCDECAUX_API_KEY=ta_clef_api_jcdecaux" > .env
-echo "VITE_API_BASE_URL=https://api.jcdecaux.com/vls/v3" >> .env
 
 # 💡 Les variables doivent toujours commencer par VITE_
 # Exemple fourni dans .env.example
 
-# 4️⃣ Lancer le projet en mode développement
+# Lancer le projet en mode développement
 pnpm dev
 
 # 🖥️ Application disponible sur :
 # 👉 http://localhost:5173
-
----
-
-## 🧰 Build & Preview (optionnel)
-
-# Générer la version de production
-pnpm build
-
-# Prévisualiser le build localement
-pnpm preview
 
 ---
 
@@ -56,48 +45,48 @@ pnpm preview
 ## 👀 Aperçu Visuel
 
 # 🗺️ Carte interactive : 
-# - Affichage dynamique des stations JCDecaux
-# - Popup au survol avec nom et disponibilité
-# - Filtrage des stations ouvertes / vélos / places
+- Affichage dynamique des stations JCDecaux
+- Popup au survol avec nom et disponibilité
+- Filtrage des stations ouvertes / vélos / places
 
 # ⭐ Favoris :
-# - Ajout et suppression en un clic
-# - Persistance locale
+- Ajout et suppression en un clic
+- Persistance locale
 
 # 🕑 Historique :
-# - Historique des dernières stations consultées
-# - Auto-rafraîchissement toutes les 90 secondes
+- Historique des dernières stations consultées
+- Auto-rafraîchissement toutes les 90 secondes
 
 # ⚠️ Gestion des erreurs :
-# - Popup claire si l’API ou le fichier CSV échoue
-# - Vérification du format CSV à l’import
+- Popup claire si l’API ou le fichier CSV échoue
+- Vérification du format CSV à l’import
 
 ---
 
 ## 🧩 Structure du Projet
 
-# 📁 src/
-# ├── components/              # Composants UI réutilisables (Sidebar, Map, Popup, etc.)
-# ├── hooks/                   # Custom hooks : useFavorites, useFilters, useRealtime...
-# ├── pages/                   # Pages principales (StationsPage)
-# ├── services/                # Appels API JCDecaux
-# ├── types/                   # Typages TypeScript structurés
-# │   ├── api/                 # Types liés aux réponses JCDecaux
-# │   ├── data/                # Types de données locales (filtres, favoris...)
-# │   ├── ui/                  # Types liés aux composants UI
-# ├── utils/                   # Fonctions utilitaires (parse CSV, mappers...)
-# ├── data/                    # Données statiques (contrats JCDecaux)
-# ├── main.tsx                 # Point d’entrée React
-# └── App.tsx                  # Router & structure principale
+📁 src/
+├── app.tsx                  # Router & structure principale
+├── components/              # Composants UI réutilisables (Sidebar, Map, Popup, etc.)
+├── hooks/                   # Custom hooks : useFavorites, useFilters, useRealtime...
+├── pages/                   # Pages principales (StationsPage)
+├── services/                # Appels API JCDecaux
+├── types/                   # Typages TypeScript structurés
+│   ├── api/                 # Types liés aux réponses JCDecaux
+│   ├── data/                # Types de données locales (filtres, favoris...)
+│   ├── ui/                  # Types liés aux composants UI
+├── utils/                   # Fonctions utilitaires (parse CSV, mappers...)
+├── data/                    # Données statiques (contrats JCDecaux)
+└── main.tsx                 # Point d’entrée React
 
 ---
 
 ## 🧩 Astuce VS Code (pour Tailwind v4)
 
 # Ajoute ceci dans .vscode/settings.json pour éviter les avertissements :
-# {
-#   "css.lint.unknownAtRules": "ignore",
-#   "css.validate": true
-# }
+{
+   "css.lint.unknownAtRules": "ignore",
+   "css.validate": true
+}
 
 ---
